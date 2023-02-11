@@ -2,7 +2,9 @@
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH="/Users/aimenhamed/.oh-my-zsh"
+export ZSH="$HOME/.oh-my-zsh"
+export GOPATH=$(go env GOPATH)
+export JAVA_HOME=$(/usr/libexec/java_home -v 17.0.4)
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
@@ -11,15 +13,35 @@ export ZSH="/Users/aimenhamed/.oh-my-zsh"
 ZSH_THEME="mh"
 
 ### Aliases ###
+alias vim='nvim'
+alias vi='nvim'
 
-alias vim=nvim
+alias so="source"
+alias ninit='vi ~/.config/nvim/init.vim'
+
+# development
+alias tt='tmux attach-session'
+alias lint='npm run lint'
+alias ttest='npm run test'
+alias ccoverage='npm run coverage'
+alias gogo='cd ~/go/src/github.com/aimenhamed'
+alias tnode='npx ts-node'
+alias trun='npx esno'
+alias pg='docker run --rm -itd --name app -e POSTGRES_PASSWORD=pass -e POSTGRES_DB=mydb -p 5432:5432 postgres'
+alias pgl='psql -U postgres -d mydb -h 0.0.0.0'
 
 # navigation
-#
 alias ...='cd ../..'
 alias .3='cd ../../..'
 alias .4='cd ../../../..'
 alias .5='cd ../../../../..'
+alias repos='cd ~/code'
+alias samples='cd ~/Desktop/stuff/samples'
+alias 2511='cd ~/uni/year3/t2/comp2511'
+alias 3141='cd ~/uni/year3/t2/comp3141'
+alias 3311='cd ~/uni/year3/t3/comp3311'
+alias 3331='cd ~/uni/year3/t3/comp3331'
+alias 4511='cd ~/uni/year3/t3/comp4511'
 
 # git
 alias addup='git add -u'
@@ -30,13 +52,18 @@ alias clone='git clone'
 alias commit='git commit -m'
 alias fetch='git fetch'
 alias pull='git pull origin'
-alias push='git push origin'
-alias stat='git status'  # 'status' is protected name so using 'stat' instead
+alias push='git push -u origin HEAD'
+alias stat='git status'  
 alias tag='git tag'
 alias newtag='git tag -a'
+alias add='git add'
+alias stash='git stash'
+alias merge='git merge'
 
 # other
 alias zshrc='vim ~/.zshrc'
+alias q="exit"
+alias jrun="java -jar"
 
 ### Functions ###
 
@@ -44,7 +71,7 @@ mkcd () {
     mkdir -p $1
     cd $1
 }
-  
+
 runsh () {
     chmod 755 *.sh
     if test $? -eq 0
@@ -68,11 +95,19 @@ runpl () {
 }
 
 sshkey () {
-    cat ~/.ssh/id_rsa.pub
+    cat ~/.ssh/id_ed25519.pub
 }
 
-dogcd () {
-    python3 code/other/gcd.py $1 $2
+jr () {
+    java -jar $1
+}
+
+ytdl () {
+    python3 /Users/aimen/code/ytdl/ytdl.py       
+}
+
+prune () {
+    docker system prune -a -f; docker volume prune -f
 }
 
 # Set list of themes to pick from when loading at random
@@ -88,14 +123,13 @@ dogcd () {
 # Case-sensitive completion must be off. _ and - will be interchangeable.
 # HYPHEN_INSENSITIVE="true"
 
-# Uncomment the following line to disable bi-weekly auto-update checks.
-# DISABLE_AUTO_UPDATE="true"
-
-# Uncomment the following line to automatically update without prompting.
-# DISABLE_UPDATE_PROMPT="true"
+# Uncomment one of the following lines to change the auto-update behavior
+# zstyle ':omz:update' mode disabled  # disable automatic updates
+# zstyle ':omz:update' mode auto      # update automatically without asking
+# zstyle ':omz:update' mode reminder  # just remind me to update when it's time
 
 # Uncomment the following line to change how often to auto-update (in days).
-# export UPDATE_ZSH_DAYS=13
+# zstyle ':omz:update' frequency 13
 
 # Uncomment the following line if pasting URLs and other text is messed up.
 # DISABLE_MAGIC_FUNCTIONS="true"
@@ -110,8 +144,9 @@ dogcd () {
 # ENABLE_CORRECTION="true"
 
 # Uncomment the following line to display red dots whilst waiting for completion.
-# Caution: this setting can cause issues with multiline prompts (zsh 5.7.1 and newer seem to work)
-# See https://github.com/ohmyzsh/ohmyzsh/issues/5765
+# You can also set it to another string to have that shown instead of the default red dots.
+# e.g. COMPLETION_WAITING_DOTS="%F{yellow}waiting...%f"
+# Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
 # COMPLETION_WAITING_DOTS="true"
 
 # Uncomment the following line if you want to disable marking untracked files
@@ -135,11 +170,9 @@ dogcd () {
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git svn)
+plugins=(git)
 
 source $ZSH/oh-my-zsh.sh
-
-neofetch
 
 # User configuration
 
@@ -162,7 +195,22 @@ neofetch
 # plugins, and themes. Aliases can be placed here, though oh-my-zsh
 # users are encouraged to define aliases within the ZSH_CUSTOM folder.
 # For a full list of active aliases, run `alias`.
-#
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+[ -f "/Users/aimen/.ghcup/env" ] && source "/Users/aimen/.ghcup/env" # ghcup-env
+
+
+# bun completions
+[ -s "/Users/aimen/.bun/_bun" ] && source "/Users/aimen/.bun/_bun"
+
+# Bun
+export BUN_INSTALL="/Users/aimen/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+# Deno 
+export DENO_INSTALL="/Users/aimen/.deno"
+export PATH="$DENO_INSTALL/bin:$PATH"
+eval "$(fnm env --use-on-cd)"
