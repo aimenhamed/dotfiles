@@ -3,8 +3,8 @@
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
-export GOPATH=$(go env GOPATH)
 export JAVA_HOME=$(/usr/libexec/java_home -v 17.0.4)
+export HOMEBREW_NO_AUTO_UPDATE=1
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
@@ -12,12 +12,18 @@ export JAVA_HOME=$(/usr/libexec/java_home -v 17.0.4)
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 ZSH_THEME="mh"
 
+# phpbrew
+[[ -e ~/.phpbrew/bashrc ]] && source ~/.phpbrew/bashrc
+
 ### Aliases ###
 alias vim='nvim'
 alias vi='nvim'
 
 alias so="source"
 alias ninit='vi ~/.config/nvim/init.vim'
+alias redis="docker run --rm -itd -p 6379:6379 --name redis redis"
+alias mk="minikube"
+alias untar="tar -xvf"
 
 # development
 alias tt='tmux attach-session'
@@ -27,8 +33,10 @@ alias ccoverage='npm run coverage'
 alias gogo='cd ~/go/src/github.com/aimenhamed'
 alias tnode='npx ts-node'
 alias trun='npx esno'
-alias pg='docker run --rm -itd --name app -e POSTGRES_PASSWORD=pass -e POSTGRES_DB=mydb -p 5432:5432 postgres'
+alias pg='docker run --rm -itd --name postgres -e POSTGRES_PASSWORD=pass -e POSTGRES_DB=mydb -p 5432:5432 postgres'
 alias pgl='psql -U postgres -d mydb -h 0.0.0.0'
+alias ddb='docker run --rm -d --name dragonflydb -p 6379:6379 --ulimit memlock=-1 docker.dragonflydb.io/dragonflydb/dragonfly'
+alias gor='go run cmd/main.go'
 
 # navigation
 alias ...='cd ../..'
@@ -106,10 +114,42 @@ ytdl () {
     python3 /Users/aimen/code/ytdl/ytdl.py       
 }
 
+lsk () {
+  java -jar /Users/aimen/repos/lsk/out/artifacts/untitled_jar/untitled.jar $1 $2
+}
+
 prune () {
     docker system prune -a -f; docker volume prune -f
 }
 
+ports () {
+  out=$(sudo lsof -i :$1)
+  if [[ $out ]]; then
+    echo "$out"
+    list=$(echo "$out" | awk 'NR>1 {print $2}')
+    echo "\nTerminate via kill -9 $list"
+  else
+    echo "No ports on $1"
+  fi
+}
+
+kr() {
+  kotlin_file="$1"
+  jar="main.jar"
+
+  if [ "$#" -eq 2 ]; then
+    jar="$2"
+  fi
+
+  kotlinc "$kotlin_file" -include-runtime -d "$jar"
+
+  if [ $? -eq 0 ]; then
+    echo "Compilation successful. Running the JAR..."
+    java -jar "$jar"
+  else
+    echo "Compilation failed."
+  fi
+}
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
 # a theme from this variable instead of looking in $ZSH/themes/
@@ -214,3 +254,54 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 export DENO_INSTALL="/Users/aimen/.deno"
 export PATH="$DENO_INSTALL/bin:$PATH"
 eval "$(fnm env --use-on-cd)"
+# year4 t1
+alias 3121='cd /Users/aimen/uni/year4/t1/comp3121'
+alias 4920='cd /Users/aimen/uni/year4/t1/comp4920'
+
+# pnpm
+export PNPM_HOME="/Users/aimen/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
+
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+pj() {
+  CONFIG_PATH="$HOME/.pj.json"
+  /usr/local/bin/pj "$@"
+  if [ $# -eq 0 ]; then
+    PATH_TO_CD=$(cat $CONFIG_PATH | jq -r ".last_opened")
+    cd "$PATH_TO_CD"
+  fi
+}
+
+pv() {
+  CONFIG_PATH="$HOME/.pj.json"
+  /usr/local/bin/pj "$@"
+  if [ $# -eq 0 ]; then
+    PATH_TO_CD=$(cat $CONFIG_PATH | jq -r ".last_opened")
+    cd "$PATH_TO_CD"
+  fi
+  vi
+}
+export MODULAR_HOME="/Users/aimen/.modular"
+export PATH="/Users/aimen/.modular/pkg/packages.modular.com_mojo/bin:$PATH"
+export PATH="/usr/local/opt/llvm/bin:$PATH"
+export LDFLAGS="-L/usr/local/opt/llvm/lib"
+export CPPFLAGS="-I/usr/local/opt/llvm/include"
+export CXX="/usr/local/opt/llvm/bin/clang++"
+
+
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+# year4 term3
+alias 6991='cd /Users/aimen/uni/year4/term3/comp6991'
+alias 9414='cd /Users/aimen/uni/year4/term3/comp9414'
+# year1 t3
+alias 6991='cd /Users/aimen/uni/year1/t3/comp6991'
+alias 9414='cd /Users/aimen/uni/year1/t3/comp9414'
